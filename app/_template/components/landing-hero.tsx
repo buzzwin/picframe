@@ -46,6 +46,12 @@ export function LandingHero() {
             user management powered by Clerk.
           </p>
           <div className="relative flex gap-3">
+            <Link
+              href="/picframe"
+              className="px-4 py-2 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm font-semibold hover:from-purple-700 hover:to-blue-700 transition-all"
+            >
+              Try PicFrame App
+            </Link>
             <SignedIn>
               <Link
                 href="/dashboard"

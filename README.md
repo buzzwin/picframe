@@ -36,6 +36,28 @@ This template allows you to get started with Clerk and Next.js (App Router) in a
 - Hooks for accessing user data and authentication state
 - Organizations for multi-tenant applications
 
+## 🖼️ PicFrame App - NEW!
+
+This template now includes **PicFrame**, an AI-powered picture frame layout designer built with Google's Gemini AI!
+
+### Features:
+
+- 📸 Upload wall photos or capture with your camera
+- 🤖 AI-powered frame layout suggestions using Gemini API
+- 🎨 Multiple layout styles (Grid, Gallery, Asymmetric)
+- 📐 Smart spacing and aesthetic recommendations
+- 💾 Export and print layouts
+- 🎯 Optimized for any wall size
+
+### Quick Start:
+
+1. Get a free Gemini API key: https://makersuite.google.com/app/apikey
+2. Copy `env.template` to `.env.local` and add your API key
+3. Run `npm run dev`
+4. Visit http://localhost:3000/picframe
+
+📖 **Full Documentation**: See [PICFRAME_README.md](./PICFRAME_README.md) and [SETUP.md](./SETUP.md) for detailed instructions.
+
 ## Demo
 
 A hosted demo of this example is available at https://clerk-nextjs-app-router.vercel.app/
