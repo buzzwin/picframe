@@ -5,6 +5,8 @@ import { WallDimensionInput } from "./components/WallDimensionInput";
 import { FrameVisualization } from "./components/FrameVisualization";
 import { LayoutSelector } from "./components/LayoutSelector";
 import { AestheticTips } from "./components/AestheticTips";
+import { MobileNavigation } from "../components/MobileNavigation";
+import { FloatingActionButton } from "../components/FloatingActionButton";
 import Link from "next/link";
 
 interface Frame {
@@ -130,8 +132,11 @@ export default function PicFramePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      {/* Mobile Navigation */}
+      <MobileNavigation />
+
+      {/* Desktop Header */}
+      <header className="hidden md:block bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -165,12 +170,141 @@ export default function PicFramePage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-2 md:py-8">
+        {/* Mobile Full-Screen Layout */}
+        {selectedLayout && wallImage ? (
+          <div className="md:hidden">
+            {/* Back Button */}
+            <div className="mb-3">
+              <button
+                onClick={() => {
+                  setSelectedLayout(null);
+                  setAnalysisResult(null);
+                }}
+                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+                Back to Upload
+              </button>
+            </div>
+
+            {/* Mobile Visualization - Full Screen */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2 mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-lg font-semibold text-gray-800">
+                  Frame Layout
+                </h2>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleRandomizeLayout}
+                    className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium text-xs"
+                  >
+                    <svg
+                      className="w-3 h-3 inline mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
+                    </svg>
+                    Shuffle
+                  </button>
+                </div>
+              </div>
+              <FrameVisualization
+                wallImage={wallImage}
+                layout={selectedLayout}
+                wallWidth={wallWidth}
+                wallHeight={wallHeight}
+              />
+            </div>
+
+            {/* Mobile Controls */}
+            <div className="space-y-3">
+              {/* Layout Selector */}
+              {analysisResult && (
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-3">
+                  <h3 className="font-semibold text-gray-800 mb-2">
+                    Layout Options
+                  </h3>
+                  <div className="space-y-2">
+                    {analysisResult.layouts.map((layout, index) => {
+                      const isSelected = selectedLayout.name === layout.name;
+                      return (
+                        <button
+                          key={index}
+                          onClick={() => setSelectedLayout(layout)}
+                          className={`w-full p-3 rounded-lg border-2 transition-all text-left ${
+                            isSelected
+                              ? "border-purple-600 bg-purple-50"
+                              : "border-gray-200 hover:border-purple-300"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h4 className="font-semibold text-gray-800">
+                                {layout.name}
+                              </h4>
+                              <p className="text-sm text-gray-600">
+                                {layout.description}
+                              </p>
+                            </div>
+                            {isSelected && (
+                              <svg
+                                className="w-5 h-5 text-purple-600"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Tips */}
+              <AestheticTips
+                tips={selectedLayout.aestheticTips}
+                wallAnalysis={analysisResult?.wallAnalysis}
+              />
+            </div>
+          </div>
+        ) : null}
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 md:gap-8">
           {/* Left Panel - Upload and Settings */}
-          <div className="lg:col-span-1 space-y-6">
+          <div
+            className={`lg:col-span-1 space-y-3 md:space-y-6 ${
+              selectedLayout && wallImage ? "hidden md:block" : ""
+            }`}
+          >
             {/* Image Upload Section */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-3 md:p-6">
               <h2 className="text-xl font-semibold mb-4 text-gray-800">
                 1. Upload Wall Image
               </h2>
@@ -364,11 +498,11 @@ export default function PicFramePage() {
           </div>
 
           {/* Right Panel - Visualization and Results */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-2 md:space-y-6 hidden md:block">
             {selectedLayout && wallImage ? (
               <>
                 {/* Visualization */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2 md:p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-semibold text-gray-800">
                       Frame Layout Preview
@@ -449,6 +583,39 @@ export default function PicFramePage() {
           </div>
         </div>
       </main>
+
+      {/* Floating Action Button for Mobile */}
+      <FloatingActionButton
+        onClick={() => {
+          // Reset the form to start a new layout
+          setWallImage(null);
+          setWallWidth(120);
+          setWallHeight(96);
+          setFrameCount(null);
+          setAnalysisResult(null);
+          setSelectedLayout(null);
+          setError(null);
+          if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+          }
+        }}
+        icon={
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+        }
+        label="New Layout"
+      />
     </div>
   );
 }

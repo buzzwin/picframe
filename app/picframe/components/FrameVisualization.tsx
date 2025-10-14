@@ -47,9 +47,15 @@ export function FrameVisualization({
       const aspectRatio = wallHeight / wallWidth;
       const calculatedHeight = containerWidth * aspectRatio;
 
+      // On mobile, use full available height minus safe areas
+      const isMobile = window.innerWidth < 768;
+      const maxHeight = isMobile
+        ? window.innerHeight - 120 // Account for nav and minimal padding
+        : 600; // Desktop max height
+
       setCanvasSize({
         width: containerWidth,
-        height: Math.min(calculatedHeight, 600), // Max height of 600px
+        height: Math.min(calculatedHeight, maxHeight),
       });
     };
 
@@ -245,13 +251,13 @@ export function FrameVisualization({
   };
 
   return (
-    <div className="space-y-4">
-      <div className="relative bg-gray-100 rounded-lg overflow-hidden">
+    <div className="space-y-2 md:space-y-4">
+      <div className="relative bg-gray-100 rounded-lg overflow-hidden w-full -mx-2 md:mx-0">
         <canvas
           ref={canvasRef}
           width={canvasSize.width}
           height={canvasSize.height}
-          className="w-full"
+          className="w-full h-auto"
         />
       </div>
 

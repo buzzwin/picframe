@@ -1,11 +1,26 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Appearance } from "@clerk/types";
 import "./globals.css";
+import "./mobile-styles.css";
 import Script from "next/script";
 import localFont from "next/font/local";
 import { templateMetadata } from "./_template/content/metadata";
 
-export const metadata = templateMetadata;
+export const metadata = {
+  ...templateMetadata,
+  viewport:
+    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
+  themeColor: "#9333ea",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "PicFrame",
+  },
+  manifest: "/manifest.json",
+  icons: {
+    apple: "/icon-192.png",
+  },
+};
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
