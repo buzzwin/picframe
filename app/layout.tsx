@@ -8,9 +8,6 @@ import { templateMetadata } from "./_template/content/metadata";
 
 export const metadata = {
   ...templateMetadata,
-  viewport:
-    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
-  themeColor: "#9333ea",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -20,6 +17,14 @@ export const metadata = {
   icons: {
     apple: "/icon-192.png",
   },
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: "#9333ea",
 };
 
 const geistSans = localFont({

@@ -3,6 +3,8 @@
 import { useState, useRef } from "react";
 import { WallDimensionInput } from "./components/WallDimensionInput";
 import { FrameVisualization } from "./components/FrameVisualization";
+import { InteractiveCanvas } from "./components/InteractiveCanvas";
+import { FramePalette } from "./components/FramePalette";
 import { LayoutSelector } from "./components/LayoutSelector";
 import { AestheticTips } from "./components/AestheticTips";
 import { MobileNavigation } from "../components/MobileNavigation";
@@ -49,6 +51,9 @@ export default function PicFramePage() {
     null
   );
   const [selectedLayout, setSelectedLayout] = useState<Layout | null>(null);
+  const [currentFrames, setCurrentFrames] = useState<Frame[]>([]);
+  const [isInteractiveMode, setIsInteractiveMode] = useState(false);
+  const [selectedFrameId, setSelectedFrameId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -114,6 +119,7 @@ export default function PicFramePage() {
       setAnalysisResult(data);
       if (data.layouts && data.layouts.length > 0) {
         setSelectedLayout(data.layouts[0]);
+        setCurrentFrames(data.layouts[0].frames);
       }
     } catch (err) {
       console.error("Analysis error:", err);
@@ -131,6 +137,73 @@ export default function PicFramePage() {
         Math.random() * analysisResult.layouts.length
       );
       setSelectedLayout(analysisResult.layouts[randomIndex]);
+      setCurrentFrames(analysisResult.layouts[randomIndex].frames);
+    }
+  };
+
+  const handleFramesUpdate = (updatedFrames: Frame[]) => {
+    setCurrentFrames(updatedFrames);
+    // Update the selected layout with the new frames
+    if (selectedLayout) {
+      setSelectedLayout({
+        ...selectedLayout,
+        frames: updatedFrames,
+      });
+    }
+  };
+
+  const handleResetLayout = () => {
+    if (selectedLayout) {
+      setCurrentFrames(selectedLayout.frames);
+    }
+  };
+
+  const handleAddFrame = (frameTemplate: Omit<Frame, "id" | "x" | "y">) => {
+    const newFrame: Frame = {
+      ...frameTemplate,
+      id: `frame-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      x: 50, // Center horizontally
+      y: 50, // Center vertically
+    };
+
+    const updatedFrames = [...currentFrames, newFrame];
+    setCurrentFrames(updatedFrames);
+
+    // Update selected layout
+    if (selectedLayout) {
+      setSelectedLayout({
+        ...selectedLayout,
+        frames: updatedFrames,
+      });
+    }
+  };
+
+  const handleDeleteFrame = (frameId: string) => {
+    const updatedFrames = currentFrames.filter((frame) => frame.id !== frameId);
+    setCurrentFrames(updatedFrames);
+    setSelectedFrameId(null);
+
+    // Update selected layout
+    if (selectedLayout) {
+      setSelectedLayout({
+        ...selectedLayout,
+        frames: updatedFrames,
+      });
+    }
+  };
+
+  const handleUpdateFrame = (frameId: string, updates: Partial<Frame>) => {
+    const updatedFrames = currentFrames.map((frame) =>
+      frame.id === frameId ? { ...frame, ...updates } : frame
+    );
+    setCurrentFrames(updatedFrames);
+
+    // Update selected layout
+    if (selectedLayout) {
+      setSelectedLayout({
+        ...selectedLayout,
+        frames: updatedFrames,
+      });
     }
   };
 
@@ -232,16 +305,88 @@ export default function PicFramePage() {
                   </button>
                 </div>
               </div>
-              <FrameVisualization
-                wallImage={wallImage}
-                layout={selectedLayout}
-                wallWidth={wallWidth}
-                wallHeight={wallHeight}
-              />
+              {/* Mode Toggle */}
+              <div className="mb-4 flex justify-center items-center gap-4">
+                <div className="bg-gray-100 rounded-lg p-1 flex">
+                  <button
+                    onClick={() => setIsInteractiveMode(false)}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                      !isInteractiveMode
+                        ? "bg-white text-gray-900 shadow-sm"
+                        : "text-gray-500 hover:text-gray-700"
+                    }`}
+                  >
+                    Static View
+                  </button>
+                  <button
+                    onClick={() => setIsInteractiveMode(true)}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                      isInteractiveMode
+                        ? "bg-white text-gray-900 shadow-sm"
+                        : "text-gray-500 hover:text-gray-700"
+                    }`}
+                  >
+                    Interactive Canvas
+                  </button>
+                </div>
+
+                {isInteractiveMode && (
+                  <button
+                    onClick={handleResetLayout}
+                    className="px-3 py-2 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition-colors text-sm font-medium flex items-center gap-2"
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
+                    </svg>
+                    Reset Layout
+                  </button>
+                )}
+              </div>
+
+              {isInteractiveMode ? (
+                <InteractiveCanvas
+                  wallImage={wallImage}
+                  layout={selectedLayout}
+                  wallWidth={wallWidth}
+                  wallHeight={wallHeight}
+                  onFramesUpdate={handleFramesUpdate}
+                  selectedFrameId={selectedFrameId}
+                  onSelectFrame={setSelectedFrameId}
+                />
+              ) : (
+                <FrameVisualization
+                  wallImage={wallImage}
+                  layout={selectedLayout}
+                  wallWidth={wallWidth}
+                  wallHeight={wallHeight}
+                />
+              )}
             </div>
 
             {/* Mobile Controls */}
             <div className="space-y-3">
+              {/* Frame Palette - Only show in interactive mode */}
+              {isInteractiveMode && (
+                <FramePalette
+                  frames={currentFrames}
+                  onAddFrame={handleAddFrame}
+                  onDeleteFrame={handleDeleteFrame}
+                  onUpdateFrame={handleUpdateFrame}
+                  selectedFrameId={selectedFrameId}
+                  onSelectFrame={setSelectedFrameId}
+                />
+              )}
+
               {/* Layout Selector */}
               {analysisResult && (
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-3">
@@ -254,7 +399,10 @@ export default function PicFramePage() {
                       return (
                         <button
                           key={index}
-                          onClick={() => setSelectedLayout(layout)}
+                          onClick={() => {
+                            setSelectedLayout(layout);
+                            setCurrentFrames(layout.frames);
+                          }}
                           className={`w-full p-3 rounded-lg border-2 transition-all text-left ${
                             isSelected
                               ? "border-purple-600 bg-purple-50"
@@ -505,6 +653,18 @@ export default function PicFramePage() {
           <div className="lg:col-span-2 space-y-2 md:space-y-6 hidden md:block">
             {selectedLayout && wallImage ? (
               <>
+                {/* Frame Palette - Only show in interactive mode */}
+                {isInteractiveMode && (
+                  <FramePalette
+                    frames={currentFrames}
+                    onAddFrame={handleAddFrame}
+                    onDeleteFrame={handleDeleteFrame}
+                    onUpdateFrame={handleUpdateFrame}
+                    selectedFrameId={selectedFrameId}
+                    onSelectFrame={setSelectedFrameId}
+                  />
+                )}
+
                 {/* Visualization */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2 md:p-6">
                   <div className="flex items-center justify-between mb-4">
@@ -533,12 +693,72 @@ export default function PicFramePage() {
                       </button>
                     </div>
                   </div>
-                  <FrameVisualization
-                    wallImage={wallImage}
-                    layout={selectedLayout}
-                    wallWidth={wallWidth}
-                    wallHeight={wallHeight}
-                  />
+                  {/* Mode Toggle */}
+                  <div className="mb-4 flex flex-col items-center gap-3">
+                    <div className="bg-gray-100 rounded-lg p-1 flex">
+                      <button
+                        onClick={() => setIsInteractiveMode(false)}
+                        className={`px-3 py-2 rounded-md text-xs font-medium transition-colors ${
+                          !isInteractiveMode
+                            ? "bg-white text-gray-900 shadow-sm"
+                            : "text-gray-500 hover:text-gray-700"
+                        }`}
+                      >
+                        Static
+                      </button>
+                      <button
+                        onClick={() => setIsInteractiveMode(true)}
+                        className={`px-3 py-2 rounded-md text-xs font-medium transition-colors ${
+                          isInteractiveMode
+                            ? "bg-white text-gray-900 shadow-sm"
+                            : "text-gray-500 hover:text-gray-700"
+                        }`}
+                      >
+                        Interactive
+                      </button>
+                    </div>
+
+                    {isInteractiveMode && (
+                      <button
+                        onClick={handleResetLayout}
+                        className="px-3 py-2 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition-colors text-xs font-medium flex items-center gap-2"
+                      >
+                        <svg
+                          className="w-3 h-3"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                          />
+                        </svg>
+                        Reset Layout
+                      </button>
+                    )}
+                  </div>
+
+                  {isInteractiveMode ? (
+                    <InteractiveCanvas
+                      wallImage={wallImage}
+                      layout={selectedLayout}
+                      wallWidth={wallWidth}
+                      wallHeight={wallHeight}
+                      onFramesUpdate={handleFramesUpdate}
+                      selectedFrameId={selectedFrameId}
+                      onSelectFrame={setSelectedFrameId}
+                    />
+                  ) : (
+                    <FrameVisualization
+                      wallImage={wallImage}
+                      layout={selectedLayout}
+                      wallWidth={wallWidth}
+                      wallHeight={wallHeight}
+                    />
+                  )}
                 </div>
 
                 {/* Layout Selector */}
