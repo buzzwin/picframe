@@ -17,6 +17,7 @@ interface Frame {
   height: number;
   orientation: "landscape" | "portrait";
   size: "small" | "medium" | "large";
+  placementReason?: string;
 }
 
 interface Layout {
@@ -30,8 +31,11 @@ interface AnalysisResult {
   layouts: Layout[];
   wallAnalysis: {
     features: string[];
+    constraints: string[];
     suggestions: string[];
     optimalFrameCount: number;
+    eyeLevelRecommendation?: string;
+    styleRecommendation?: string;
   };
 }
 

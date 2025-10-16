@@ -10,6 +10,7 @@ interface Frame {
   height: number;
   orientation: "landscape" | "portrait";
   size: "small" | "medium" | "large";
+  placementReason?: string;
 }
 
 interface Layout {

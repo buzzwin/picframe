@@ -19,12 +19,32 @@ export async function POST(request: NextRequest) {
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
 
     // Prepare the prompt for Gemini
-    const prompt = `You are an interior design expert specializing in picture frame arrangements. 
+    const prompt = `You are an expert interior designer and art curator specializing in picture frame arrangements and wall art placement. 
 
-Analyze this wall image and provide frame layout recommendations with the following details:
+Analyze this wall image carefully and provide intelligent frame layout recommendations. Pay special attention to:
+
+**WALL BOUNDARIES & CONSTRAINTS:**
+- Identify where the wall actually starts and ends (corners, edges, architectural features)
+- Note any furniture placement that would interfere with frame positioning (sofas, desks, beds, etc.)
+- Detect ceiling height and any architectural elements (moldings, beams, outlets, switches)
+- Identify areas that are too high (above 8 feet) or too low (below 3 feet) for comfortable viewing
+
+**AESTHETIC & VISUAL ANALYSIS:**
+- Analyze the wall color, texture, and lighting conditions
+- Identify existing artwork, mirrors, or decorative elements that should be considered
+- Note the room's style and mood (modern, traditional, minimalist, etc.)
+- Consider the wall's relationship to windows, doors, and natural light sources
+- Evaluate the wall's proportions and visual weight distribution
+
+**FRAME PLACEMENT INTELLIGENCE:**
+- Recommend optimal eye-level positioning (57-60 inches from floor to center of frames)
+- Suggest layouts that complement the room's furniture arrangement
+- Consider visual flow and how frames guide the eye through the space
+- Recommend frame sizes that are proportional to the wall and room size
+- Suggest orientations and arrangements that enhance the room's aesthetic
 
 Wall Dimensions: ${wallWidth} inches wide x ${wallHeight} inches tall
-${frameCount ? `Desired number of frames: ${frameCount}` : 'Suggest optimal number of frames'}
+${frameCount ? `Desired number of frames: ${frameCount}` : 'Suggest optimal number of frames based on wall size and room context'}
 ${framePreferences ? `Frame preferences: ${framePreferences}` : ''}
 
 Please provide a JSON response with the following structure:
@@ -32,7 +52,7 @@ Please provide a JSON response with the following structure:
   "layouts": [
     {
       "name": "Layout name (e.g., 'Classic Grid', 'Gallery Wall', 'Asymmetric Modern')",
-      "description": "Brief description of the layout style",
+      "description": "Brief description of the layout style and why it works for this wall",
       "frames": [
         {
           "id": "unique frame id",
@@ -41,22 +61,31 @@ Please provide a JSON response with the following structure:
           "width": width in inches,
           "height": height in inches,
           "orientation": "landscape" or "portrait",
-          "size": "small", "medium", or "large"
+          "size": "small", "medium", or "large",
+          "placementReason": "Brief explanation of why this position works aesthetically"
         }
       ],
-      "aestheticTips": ["tip 1", "tip 2", "tip 3"]
+      "aestheticTips": ["specific tip 1", "specific tip 2", "specific tip 3"]
     }
   ],
   "wallAnalysis": {
-    "features": ["feature 1", "feature 2"],
-    "suggestions": ["suggestion 1", "suggestion 2"],
-    "optimalFrameCount": number
+    "features": ["wall color/type", "architectural elements", "lighting conditions", "existing decor"],
+    "constraints": ["furniture interference", "height limitations", "electrical outlets", "other obstacles"],
+    "suggestions": ["specific placement advice", "color recommendations", "lighting considerations"],
+    "optimalFrameCount": number,
+    "eyeLevelRecommendation": "specific height recommendation in inches from floor",
+    "styleRecommendation": "suggested aesthetic style based on room analysis"
   }
 }
 
-Provide 3 different layout ideas: a structured grid layout, a gallery-style layout, and an asymmetric modern layout.
+Provide 3 different layout ideas that each work well for different purposes:
+1. A structured, balanced layout for formal/traditional spaces
+2. A dynamic gallery-style layout for modern/eclectic spaces  
+3. An asymmetric artistic layout for contemporary/creative spaces
+
 Ensure frames don't overlap and maintain appropriate spacing (3-6 inches between frames).
-Consider the rule of thirds and visual balance.
+Consider the rule of thirds, visual balance, and the room's overall design harmony.
+Be specific about why each placement works based on the actual wall image analysis.
 Return ONLY valid JSON, no additional text.`;
 
     // Convert base64 image data to the format Gemini expects
@@ -130,7 +159,10 @@ function generateFallbackLayout(wallWidth: number, wallHeight: number, frameCoun
       {
         name: "Classic Grid",
         description: "A balanced grid arrangement with evenly spaced frames",
-        frames: frames,
+        frames: frames.map(frame => ({
+          ...frame,
+          placementReason: "Centered grid placement for balanced visual weight"
+        })),
         aestheticTips: [
           "Maintain consistent spacing between all frames",
           "Center the arrangement on the wall",
@@ -140,8 +172,11 @@ function generateFallbackLayout(wallWidth: number, wallHeight: number, frameCoun
     ],
     wallAnalysis: {
       features: ["Standard wall suitable for frame arrangement"],
+      constraints: ["No specific constraints detected - using fallback layout"],
       suggestions: ["Consider the lighting when positioning frames", "Leave appropriate borders around the arrangement"],
-      optimalFrameCount: count
+      optimalFrameCount: count,
+      eyeLevelRecommendation: "57-60 inches from floor to center of frames",
+      styleRecommendation: "Classic grid layout suitable for traditional and modern spaces"
     }
   };
 }

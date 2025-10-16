@@ -2,8 +2,11 @@
 
 interface WallAnalysis {
   features: string[];
+  constraints: string[];
   suggestions: string[];
   optimalFrameCount: number;
+  eyeLevelRecommendation?: string;
+  styleRecommendation?: string;
 }
 
 interface AestheticTipsProps {
@@ -88,17 +91,35 @@ export function AestheticTips({ tips, wallAnalysis }: AestheticTipsProps) {
                         key={index}
                         className="text-sm text-gray-700 flex items-start gap-2"
                       >
-                        <span className="text-blue-600">▸</span>
+                        <span className="text-green-600">✓</span>
                         {feature}
                       </li>
                     ))}
                   </ul>
                 </div>
               )}
-              {wallAnalysis.suggestions.length > 0 && (
-                <div>
+              {wallAnalysis.constraints.length > 0 && (
+                <div className="mb-3">
                   <p className="text-sm font-medium text-gray-600 mb-2">
-                    Suggestions:
+                    Constraints & Considerations:
+                  </p>
+                  <ul className="space-y-1">
+                    {wallAnalysis.constraints.map((constraint, index) => (
+                      <li
+                        key={index}
+                        className="text-sm text-gray-700 flex items-start gap-2"
+                      >
+                        <span className="text-orange-600">⚠️</span>
+                        {constraint}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {wallAnalysis.suggestions.length > 0 && (
+                <div className="mb-3">
+                  <p className="text-sm font-medium text-gray-600 mb-2">
+                    AI Recommendations:
                   </p>
                   <ul className="space-y-1">
                     {wallAnalysis.suggestions.map((suggestion, index) => (
@@ -106,11 +127,33 @@ export function AestheticTips({ tips, wallAnalysis }: AestheticTipsProps) {
                         key={index}
                         className="text-sm text-gray-700 flex items-start gap-2"
                       >
-                        <span className="text-blue-600">▸</span>
+                        <span className="text-purple-600">💡</span>
                         {suggestion}
                       </li>
                     ))}
                   </ul>
+                </div>
+              )}
+              {wallAnalysis.eyeLevelRecommendation && (
+                <div className="mb-3">
+                  <p className="text-sm font-medium text-gray-600 mb-1">
+                    Eye Level Recommendation:
+                  </p>
+                  <p className="text-sm text-gray-700 bg-blue-50 border border-blue-200 rounded-lg p-2">
+                    <span className="font-medium text-blue-800">👁️</span>{" "}
+                    {wallAnalysis.eyeLevelRecommendation}
+                  </p>
+                </div>
+              )}
+              {wallAnalysis.styleRecommendation && (
+                <div className="mb-3">
+                  <p className="text-sm font-medium text-gray-600 mb-1">
+                    Style Recommendation:
+                  </p>
+                  <p className="text-sm text-gray-700 bg-purple-50 border border-purple-200 rounded-lg p-2">
+                    <span className="font-medium text-purple-800">🎨</span>{" "}
+                    {wallAnalysis.styleRecommendation}
+                  </p>
                 </div>
               )}
             </div>
