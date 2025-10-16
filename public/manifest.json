@@ -1,7 +1,7 @@
 {
   "name": "PicFrame - AI Picture Frame Layout Designer",
   "short_name": "PicFrame",
-  "description": "AI-powered picture frame layout designer for your walls",
+  "description": "Design perfect picture frame layouts with AI. Upload your wall photo and get intelligent frame placement recommendations for any room style.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -9,7 +9,15 @@
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "en",
-  "categories": ["design", "productivity", "utilities"],
+  "categories": ["design", "productivity", "utilities", "lifestyle", "home"],
+  "screenshots": [
+    {
+      "src": "/og.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
   "icons": [
     {
       "src": "/icon-192.png",

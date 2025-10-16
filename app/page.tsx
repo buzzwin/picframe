@@ -82,13 +82,14 @@ export default function Home() {
                 <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                   Picture Frame
                 </span>{" "}
-                Layouts
+                Layouts with AI
               </h1>
 
               <p className="text-xl text-gray-600 leading-relaxed">
-                Transform your walls with AI. Upload a photo, get instant
-                professional frame layout suggestions, and create gallery-worthy
-                displays in minutes.
+                Transform your walls with AI-powered picture frame layout
+                design. Upload a photo of your wall, get instant professional
+                frame placement suggestions, and create gallery-worthy displays
+                in minutes.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">

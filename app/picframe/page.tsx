@@ -148,7 +148,7 @@ export default function PicFramePage() {
                 PicFrame
               </h1>
               <span className="text-sm text-gray-500">
-                AI-Powered Frame Layout Designer
+                AI Picture Frame Layout Designer
               </span>
             </div>
             <Link

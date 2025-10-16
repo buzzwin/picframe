@@ -70,7 +70,7 @@ export default async function DashboardPage() {
             Welcome back, {user?.firstName || "there"}! 👋
           </h1>
           <p className="text-gray-600 text-lg">
-            Here's your PicFrame dashboard overview
+            Here's your PicFrame AI Picture Frame Layout Designer dashboard
           </p>
         </div>
 
